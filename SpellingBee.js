@@ -1,67 +1,48 @@
 const checkWord = require('check-word');
 const words = checkWord('en');
 
-const letters = ['w','a','l','n','t','d','i'];
+/**
+ * Generates words such that:
+ *    Each word includes the first letter in the array
+ *    Each word is at least four letters long
+ * @param letters - array of letters to use in generated words
+ * @param maxLength - maximum length of words to generate
+ *
+ * @returns array of generated words
+ */
+function generateWords(letters, maxLength){
+  maxLength = maxLength || 5;
 
-// Each word must be at least 4 letters long
-// Each word must include the first letter in the array
+  let words = [];
+  let letterCombinations = [...letters];
 
-let twoLetterWords = [];
-for(var i=0; i<letters.length; i++){    
-  twoLetterWords.push(createWords(letters[i],letters));
-}
-
-twoLetterWords = twoLetterWords.flat();
-console.log(twoLetterWords);
-
-let threeLetterWords = [];
-for(var i=0; i<letters.length; i++){
-  threeLetterWords.push(createWords(letters[i],twoLetterWords));
-}
-
-threeLetterWords = threeLetterWords.flat();
-console.log(threeLetterWords);
-
-let fourLetterWords = [];
-for(var i=0; i<letters.length; i++){
-  fourLetterWords.push(createWords(letters[i],threeLetterWords));
-}
-
-fourLetterWords = fourLetterWords.flat();
-console.log(fourLetterWords);
-
-let fiveLetterWords = [];
-for(var i=0; i<letters.length; i++){
-  fiveLetterWords.push(createWords(letters[i],fourLetterWords));
-}
-
-fiveLetterWords = fiveLetterWords.flat();
-console.log(fiveLetterWords);
-
-let sixLetterWords = [];
-for(var i=0; i<letters.length; i++){
-  sixLetterWords.push(createWords(letters[i],fiveLetterWords));
-}
-
-sixLetterWords = sixLetterWords.flat();
-console.log(sixLetterWords);
-
-let sevenLetterWords = [];
-for(var i=0; i<letters.length; i++){
-  sevenLetterWords.push(createWords(letters[i], sixLetterWords));
-}
-
-sevenLetterWords = sevenLetterWords.flat();
-console.log(sevenLetterWords);
-
-
-function createWords(firstLetter, newLetters) {
-  var letters = [];
-  for(var i=0; i<newLetters.length; i++){
-    const word = firstLetter + newLetters[i];
-    if(words.check(word) || true){
-      letters.push(word);     
-    }
+  for( var i = 2; i <= maxLength; i++ ){
+    letterCombinations = generateLetterCombinations(letters, letterCombinations, words)
   }
-  return letters;
+
+  return words;
 }
+
+function generateLetterCombinations(letters, letterCombinations, words) {
+  let newLetterCombinations = [];
+  letters.forEach((letter)=>{
+    console.log('generating ' + (letterCombinations[0].length + 1) + ' letter words starting with \'' + letter + '\'');
+    letterCombinations.forEach((letterCombination)=>{
+      const newLetterCombination = letter + letterCombination;
+      newLetterCombinations.push(newLetterCombination);
+
+      if( isValidWord(newLetterCombination, letters[0]))
+        words.push(newLetterCombination);
+    })
+  })
+
+  return newLetterCombinations;
+}
+
+function isValidWord(letterCombination, requiredLetter){
+  return letterCombination.length > 3
+      && letterCombination.indexOf(requiredLetter) != -1
+      && words.check(letterCombination);
+}
+
+module.exports = generateWords
